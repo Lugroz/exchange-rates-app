@@ -1,39 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
-const CurrencyConverter = () => {
+const CurrencyConverter = ({ rates }) => {
   const [amount, setAmount] = useState(1);
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('EUR');
-  const [convertedAmount, setConvertedAmount] = useState(0);
+  const [convertedAmount, setConvertedAmount] = useState(null);
 
   useEffect(() => {
-    const convert = async () => {
-      const response = await axios.get(`https://api.exchangerate.host/convert?from=${fromCurrency}&to=${toCurrency}&amount=${amount}`);
-      setConvertedAmount(response.data.result);
+    const convertCurrency = () => {
+      if (fromCurrency === toCurrency) {
+        // If both currencies are the same, the converted amount is the same as the input amount.
+        setConvertedAmount(amount);
+        return;
+      }
+
+      if (rates[fromCurrency] && rates[toCurrency]) {
+        const conversionRate = rates[toCurrency] / rates[fromCurrency];
+        setConvertedAmount(amount * conversionRate);
+      } else {
+        setConvertedAmount(null);
+      }
     };
-    convert();
-  }, [amount, fromCurrency, toCurrency]);
+
+    convertCurrency();
+  }, [amount, fromCurrency, toCurrency, rates]);
 
   return (
     <div>
       <h2>Currency Converter</h2>
       <div>
-        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+          min="0"
+          step="0.01"
+        />
         <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)}>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          {/* Añadir más opciones según necesites */}
+          {Object.keys(rates).map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
         </select>
         <span> to </span>
         <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)}>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          {/* Añadir más opciones según necesites */}
+          {Object.keys(rates).map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
         </select>
-        <p>Converted Amount: {convertedAmount}</p>
+        <button onClick={() => setAmount(0)}>Clear</button>
+        {convertedAmount !== null && (
+          <p>
+            {amount} {fromCurrency} = {convertedAmount.toFixed(2)} {toCurrency}
+          </p>
+        )}
       </div>
     </div>
   );
