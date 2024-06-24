@@ -5,12 +5,11 @@ const CurrencyConverter = () => {
   const [amount, setAmount] = useState(1);
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('EUR');
-  const [convertedAmount, setConvertedAmount] = useState(null); // Usa `null` en lugar de 0 para manejar mejor el estado inicial
+  const [convertedAmount, setConvertedAmount] = useState(null); 
 
   useEffect(() => {
     const convert = async () => {
       try {
-        // Asegúrate de que `amount` esté convertido a número
         const numericAmount = parseFloat(amount);
         if (isNaN(numericAmount)) {
           setConvertedAmount('Invalid amount');
