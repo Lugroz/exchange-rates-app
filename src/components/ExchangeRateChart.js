@@ -1,52 +1,33 @@
-import React, { useEffect, useRef } from 'react';
-import Chart from 'chart.js';
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+import axios from 'axios';
 
 const ExchangeRateChart = ({ fromCurrency, toCurrency }) => {
-  const chartRef = useRef(null);
+  const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     const fetchHistoricalRates = async () => {
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
-
-      const formatDate = (date) => date.toISOString().split('T')[0];
-
       try {
-        const response = await fetch(`http://localhost:8080/${formatDate(startDate)}..${formatDate(endDate)}?from=${fromCurrency}&to=${toCurrency}`);
-        const data = await response.json();
-        const rates = Object.entries(data.rates).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+        const response = await axios.get(`http://localhost:8080/timeseries?base=${fromCurrency}&symbols=${toCurrency}`);
+        const rates = response.data.rates;
 
-        const labels = rates.map(rate => rate[0]);
-        const values = rates.map(rate => rate[1][toCurrency]);
+        const dates = Object.keys(rates);
+        const rateValues = dates.map(date => rates[date][toCurrency]);
 
-        const ctx = chartRef.current.getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{
-              label: `Exchange Rate ${fromCurrency} to ${toCurrency}`,
-              data: values,
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderWidth: 1,
-              fill: false
-            }]
-          },
-          options: {
-            scales: {
-              xAxes: [{
-                type: 'time',
-                time: {
-                  unit: 'day'
-                }
-              }]
+        setChartData({
+          labels: dates,
+          datasets: [
+            {
+              label: `Exchange Rate: ${fromCurrency} to ${toCurrency}`,
+              data: rateValues,
+              fill: false,
+              borderColor: 'rgba(75,192,192,1)',
+              tension: 0.1,
             }
-          }
+          ],
         });
       } catch (error) {
-        console.error('Error fetching historical rates:', error);
+        console.error('Error fetching historical rates', error);
       }
     };
 
@@ -55,7 +36,8 @@ const ExchangeRateChart = ({ fromCurrency, toCurrency }) => {
 
   return (
     <div>
-      <canvas ref={chartRef} />
+      <h3>Historical Exchange Rate Chart</h3>
+      <Line data={chartData} />
     </div>
   );
 };
