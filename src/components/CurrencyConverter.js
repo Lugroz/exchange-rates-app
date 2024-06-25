@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ExchangeRateChart from './ExchangeRateChart';
+import HistoricalRatesChart from './HistoricalRatesChart';
 
 const CurrencyConverter = () => {
   const [amount, setAmount] = useState(1);
@@ -39,7 +39,7 @@ const CurrencyConverter = () => {
         </select>
         <p>Converted Amount: {convertedAmount}</p>
       </div>
-      <ExchangeRateChart fromCurrency={fromCurrency} toCurrency={toCurrency} />
+      <HistoricalRatesChart fromCurrency={fromCurrency} toCurrency={toCurrency} />
     </div>
   );
 };
