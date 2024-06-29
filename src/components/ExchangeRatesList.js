@@ -1,37 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const ExchangeRatesList = ({ setBaseCurrency }) => {
+const ExchangeRatesList = ({ baseCurrency, setBaseCurrency }) => {
   const [rates, setRates] = useState({});
-  const baseUrl = process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:8080' 
-    : 'https://api.frankfurter.app';
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${baseUrl}/latest?from=USD`)
-      .then(response => response.json())
-      .then(data => setRates(data.rates))
-      .catch(error => console.error('Error fetching exchange rates:', error));
-  }, [baseUrl]);
+    const fetchRates = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.frankfurter.app/latest?from=${baseCurrency}`
+        );
+        setRates(response.data.rates);
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        setError('Failed to fetch exchange rates');
+      }
+    };
 
-  const handleBaseCurrencyChange = (event) => {
-    setBaseCurrency(event.target.value);
-  };
+    fetchRates();
+  }, [baseCurrency]);
 
   return (
     <div>
       <h2>Exchange Rates</h2>
-      <select onChange={handleBaseCurrencyChange}>
+      <select
+        value={baseCurrency}
+        onChange={(e) => setBaseCurrency(e.target.value)}
+      >
         <option value="USD">USD</option>
         <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
+        {/* Agrega más monedas según sea necesario */}
       </select>
-      <ul>
-        {Object.keys(rates).map((currency) => (
-          <li key={currency}>
-            {currency}: {rates[currency]}
-          </li>
-        ))}
-      </ul>
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <ul>
+          {Object.entries(rates).map(([currency, rate]) => (
+            <li key={currency}>
+              {currency}: {rate}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
