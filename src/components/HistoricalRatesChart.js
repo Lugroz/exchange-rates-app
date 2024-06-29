@@ -1,53 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto';
 
-const HistoricalRatesChart = ({ baseCurrency = 'USD', targetCurrency = 'EUR' }) => {
+const HistoricalRatesChart = ({ fromCurrency, toCurrency }) => {
   const [chartData, setChartData] = useState({});
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchHistoricalRates = async () => {
-      const endDate = new Date().toISOString().split('T')[0];
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
-      const formattedStartDate = startDate.toISOString().split('T')[0];
-
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `https://api.frankfurter.app/${formattedStartDate}..${endDate}?from=${baseCurrency}&to=${targetCurrency}`
-        );
-        const rates = response.data.rates;
-
-        const dates = Object.keys(rates);
-        const data = dates.map(date => rates[date][targetCurrency]);
+        const response = await axios.get(`https://api.frankfurter.app/${getStartDate()}..${getEndDate()}?from=${fromCurrency}&to=${toCurrency}`);
+        const data = response.data.rates;
+        const labels = Object.keys(data);
+        const rates = labels.map((date) => data[date][toCurrency]);
 
         setChartData({
-          labels: dates,
+          labels,
           datasets: [
             {
-              label: `${baseCurrency} to ${targetCurrency} Exchange Rate`,
-              data: data,
+              label: `${fromCurrency} to ${toCurrency}`,
+              data: rates,
               fill: false,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1
-            }
-          ]
+              backgroundColor: 'rgb(75, 192, 192)',
+              borderColor: 'rgba(75, 192, 192, 0.2)',
+            },
+          ],
         });
-        setError(null);
       } catch (error) {
-        console.error('Error fetching historical rates:', error);
-        setError('Failed to fetch historical rates');
+        console.error('Error fetching historical data:', error);
       }
     };
 
-    fetchHistoricalRates();
-  }, [baseCurrency, targetCurrency]);
+    fetchData();
+  }, [fromCurrency, toCurrency]);
+
+  const getStartDate = () => {
+    const today = new Date();
+    const priorDate = new Date().setDate(today.getDate() - 30);
+    return new Date(priorDate).toISOString().split('T')[0];
+  };
+
+  const getEndDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
 
   return (
     <div>
-      <h2>Historical Exchange Rates ({baseCurrency} to {targetCurrency})</h2>
-      {error ? <p>{error}</p> : <Line data={chartData} />}
+      <h2>Historical Rates</h2>
+      <Line data={chartData} />
     </div>
   );
 };
