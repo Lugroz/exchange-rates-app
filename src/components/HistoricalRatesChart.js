@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const HistoricalRatesChart = ({ fromCurrency, toCurrency }) => {
-  const [chartData, setChartData] = useState({});
+  const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +45,10 @@ const HistoricalRatesChart = ({ fromCurrency, toCurrency }) => {
   const getEndDate = () => {
     return new Date().toISOString().split('T')[0];
   };
+
+  if (!chartData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
