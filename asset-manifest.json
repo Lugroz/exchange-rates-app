@@ -1,15 +1,13 @@
 {
   "files": {
-    "main.css": "/exchange-rates-app/static/css/main.6cc2db90.css",
-    "main.js": "/exchange-rates-app/static/js/main.bf933442.js",
-    "static/js/453.41b84eda.chunk.js": "/exchange-rates-app/static/js/453.41b84eda.chunk.js",
+    "main.css": "/exchange-rates-app/static/css/main.fd5c0fb0.css",
+    "main.js": "/exchange-rates-app/static/js/main.0b273e7e.js",
     "index.html": "/exchange-rates-app/index.html",
-    "main.6cc2db90.css.map": "/exchange-rates-app/static/css/main.6cc2db90.css.map",
-    "main.bf933442.js.map": "/exchange-rates-app/static/js/main.bf933442.js.map",
-    "453.41b84eda.chunk.js.map": "/exchange-rates-app/static/js/453.41b84eda.chunk.js.map"
+    "main.fd5c0fb0.css.map": "/exchange-rates-app/static/css/main.fd5c0fb0.css.map",
+    "main.0b273e7e.js.map": "/exchange-rates-app/static/js/main.0b273e7e.js.map"
   },
   "entrypoints": [
-    "static/css/main.6cc2db90.css",
-    "static/js/main.bf933442.js"
+    "static/css/main.fd5c0fb0.css",
+    "static/js/main.0b273e7e.js"
   ]
 }
