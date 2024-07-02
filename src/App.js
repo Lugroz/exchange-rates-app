@@ -23,7 +23,7 @@ const App = () => {
   }, [baseCurrency]);
 
   return (
-    <Router>
+    <Router basename="/exchange-rates-app">
       <div>
         <nav>
           <ul>
